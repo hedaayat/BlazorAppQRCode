@@ -1,0 +1,40 @@
+﻿@page "/qrcode"
+@using SkiaSharp;
+@using SkiaSharp.QrCode;
+@using SkiaSharp.QrCode.Image;
+
+<PageTitle>QR Code Display</PageTitle>
+
+<h1>QR Code Display</h1>
+
+<p>This component demonstrates creating and displaying a qr code.</p>
+
+<div>
+    <label for="inputText">Enter text to generate QR Code:</label>
+    <input id="inputText" @bind="qrText" />
+    <button @onclick="GenerateQRCode">Generate QR Code</button>
+</div>
+
+@if (qrCodeImageBase64 != null)
+{
+    <div>
+        <h4>Generated QR Code:</h4>
+        <img src="data:image/png;base64,@qrCodeImageBase64" />
+    </div>
+}
+
+@code {
+    private string qrText = "https://rayonnance.fr";
+    private string? qrCodeImageBase64;
+
+    private void GenerateQRCode() 
+    {
+        using var ms = new MemoryStream();
+        QrCode qrCode = new QrCode(qrText, new Vector2Slim(256, 256), SKEncodedImageFormat.Png);
+        qrCode.GenerateImage(ms);
+
+        qrCodeImageBase64 = Convert.ToBase64String(ms.ToArray());
+        
+        StateHasChanged();
+    }
+}
